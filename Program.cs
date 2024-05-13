@@ -20,7 +20,7 @@ class Program
             Console.WriteLine("===========================================");
 
             Console.Write("Digite a opção desejada: ");
-            string opcao = Console.ReadLine();
+            string? opcao = Console.ReadLine();
 
             Console.WriteLine();
 
@@ -58,24 +58,33 @@ class Program
     {
         Console.WriteLine("==== Novo Produto ====");
         Console.Write("Digite o nome do produto: ");
-        string nome = Console.ReadLine();
+        string? nome = Console.ReadLine();
 
         Console.Write("Digite a quantidade inicial do produto: ");
-        int quantidade = int.Parse(Console.ReadLine());
+        string? quantidadeInput = Console.ReadLine();
+        int quantidade = string.IsNullOrWhiteSpace(quantidadeInput) ? 0 : int.Parse(quantidadeInput);
 
         Console.Write("Digite o preço do produto: ");
-        decimal preco = decimal.Parse(Console.ReadLine());
+        string? precoInput = Console.ReadLine();
+        decimal preco = string.IsNullOrWhiteSpace(precoInput) ? 0 : decimal.Parse(precoInput);
 
         Console.Write("Digite o autor do produto: ");
-        string autor = Console.ReadLine();
+        string? autor = Console.ReadLine();
 
         Console.Write("Digite o gênero do produto: ");
-        string genero = Console.ReadLine();
+        string? genero = Console.ReadLine();
 
-        Produto novoProduto = new Produto(nome, quantidade, preco, autor, genero);
-        estoque.Add(novoProduto);
+        if (nome != null && autor != null && genero != null)
+        {
+            Produto novoProduto = new Produto(nome, quantidade, preco, autor, genero);
+            estoque.Add(novoProduto);
 
-        Console.WriteLine("Produto adicionado ao estoque com sucesso!");
+            Console.WriteLine("Produto adicionado ao estoque com sucesso!");
+        }
+        else
+        {
+            Console.WriteLine("Dados inválidos. Produto não adicionado.");
+        }
     }
 
     static void ListarProdutos()
@@ -100,17 +109,24 @@ class Program
     {
         Console.WriteLine("==== Remover Produto ====");
         Console.Write("Digite o nome do produto que deseja remover: ");
-        string nome = Console.ReadLine();
+        string? nome = Console.ReadLine();
 
-        Produto produto = estoque.Find(p => p.Nome == nome);
-        if (produto == null)
+        if (nome != null)
         {
-            Console.WriteLine("Produto não encontrado no estoque.");
+            Produto? produto = estoque.Find(p => p.Nome == nome);
+            if (produto == null)
+            {
+                Console.WriteLine("Produto não encontrado no estoque.");
+            }
+            else
+            {
+                estoque.Remove(produto);
+                Console.WriteLine("Produto removido do estoque com sucesso!");
+            }
         }
         else
         {
-            estoque.Remove(produto);
-            Console.WriteLine("Produto removido do estoque com sucesso!");
+            Console.WriteLine("Nome inválido.");
         }
     }
 
@@ -118,19 +134,28 @@ class Program
     {
         Console.WriteLine("==== Entrada de Estoque ====");
         Console.Write("Digite o nome do produto: ");
-        string nome = Console.ReadLine();
+        string? nome = Console.ReadLine();
 
         Console.Write("Digite a quantidade a ser adicionada ao estoque: ");
-        int quantidade = int.Parse(Console.ReadLine());
-        Produto produto = estoque.Find(p => p.Nome == nome);
-        if (produto == null)
+        string? quantidadeInput = Console.ReadLine();
+        int quantidade = string.IsNullOrWhiteSpace(quantidadeInput) ? 0 : int.Parse(quantidadeInput);
+
+        if (nome != null)
         {
-            Console.WriteLine("Produto não encontrado no estoque.");
+            Produto? produto = estoque.Find(p => p.Nome == nome);
+            if (produto == null)
+            {
+                Console.WriteLine("Produto não encontrado no estoque.");
+            }
+            else
+            {
+                produto.Quantidade += quantidade;
+                Console.WriteLine("Entrada de estoque realizada com sucesso!");
+            }
         }
         else
         {
-            produto.Quantidade += quantidade;
-            Console.WriteLine("Entrada de estoque realizada com sucesso!");
+            Console.WriteLine("Nome inválido.");
         }
     }
 
@@ -138,24 +163,32 @@ class Program
     {
         Console.WriteLine("==== Saída de Estoque ====");
         Console.Write("Digite o nome do produto: ");
-        string nome = Console.ReadLine();
+        string? nome = Console.ReadLine();
 
         Console.Write("Digite a quantidade a ser removida do estoque: ");
-        int quantidade = int.Parse(Console.ReadLine());
+        string? quantidadeInput = Console.ReadLine();
+        int quantidade = string.IsNullOrWhiteSpace(quantidadeInput) ? 0 : int.Parse(quantidadeInput);
 
-        Produto produto = estoque.Find(p => p.Nome == nome);
-        if (produto == null)
+        if (nome != null)
         {
-            Console.WriteLine("Produto não encontrado no estoque.");
-        }
-        else if (produto.Quantidade < quantidade)
-        {
-            Console.WriteLine("Quantidade insuficiente no estoque.");
+            Produto? produto = estoque.Find(p => p.Nome == nome);
+            if (produto == null)
+            {
+                Console.WriteLine("Produto não encontrado no estoque.");
+            }
+            else if (produto.Quantidade < quantidade)
+            {
+                Console.WriteLine("Quantidade insuficiente no estoque.");
+            }
+            else
+            {
+                produto.Quantidade -= quantidade;
+                Console.WriteLine("Saída de estoque realizada com sucesso!");
+            }
         }
         else
         {
-            produto.Quantidade -= quantidade;
-            Console.WriteLine("Saída de estoque realizada com sucesso!");
+            Console.WriteLine("Nome inválido.");
         }
     }
 }
